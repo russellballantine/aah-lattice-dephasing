@@ -1,0 +1,10 @@
+# --- Core Quantum Stack ---
+qiskit>=1.3.0
+qiskit-ibm-runtime>=0.30.0
+
+# --- Scientific Computing & Data Analysis ---
+numpy>=2.1.0
+scipy>=1.14.0
+
+# --- Visualization & Plotting ---
+matplotlib>=3.9.0
