@@ -55,11 +55,11 @@ def build_aah_trotter_circuit(num_qubits, lmbda, alpha, J, total_time, trotter_s
 
 def run_noise_free_simulation():
     # --- Core Configuration ---
-    num_qubits = 5       # Compact lattice size constraint
-    lmbda = 1.5          # Quasiperiodic potential strength
-    J = 1.0              # Kinetic hopping amplitude
-    total_time = 2.0     # Evolution timeframe
-    trotter_steps = 3    # Kept compressed to mitigate gate depth
+    num_qubits = 7       # Updated to match the Phase 2/3 validated model sizing
+    lmbda = 1.5          
+    J = 1.0              
+    total_time = 2.0     
+    trotter_steps = 30   # Scaled up from 3 to observe deep localization tails
     
     print("--- Running AAH Phase Beta Reference Controls ---")
     # 1. Phase Beta (Spiral of Fifths Irrational Modulation)
