@@ -1,4 +1,4 @@
-# Research Note 05: Rigorous IPR Scaling Framework and Commensurability Artifact Resolution
+# Research Note 05: IPR Scaling Framework and Commensurability Artifact Resolution
 **Date:** November 4, 2026  
 **Author:** Russell Ballantine  
 **Project:** aah-lattice-dephasing  
