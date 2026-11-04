@@ -6,12 +6,12 @@
 
 ---
 
-## 1. Executive Summary
-This note documents the mathematical correction, standardization, and validation of the multi-qubit thermodynamic scaling engine (`src/noisy_simulation.py`). Previous ad-hoc neighbor cluster tracking has been deprecated in favor of a rigorous **Inverse Participation Ratio (IPR)** framework. Telemetry confirms that the rational cyclical approximation ($\beta = 0.5850$) derived from the pentatonic structural spiral successfully drives anti-localization transport dynamics across macroscopic systems, maintaining an open routing profile up to $N=51$ while the unmodulated periodic baseline remains structurally trapped by localized hardware errors.
+## 1. Summary
+This note documents the mathematical correction, standardization, and validation of the multi-qubit scaling engine (`src/noisy_simulation.py`). Previous ad-hoc neighbor cluster tracking has been deprecated in favor of a rigorous **Inverse Participation Ratio (IPR)** framework. Telemetry confirms that the rational cyclical approximation ($\beta = 0.5850$) derived from the pentatonic structural spiral successfully drives anti-localization transport dynamics across macroscopic systems, maintaining an open routing profile up to $N=51$ while the unmodulated periodic baseline remains structurally trapped by localized hardware errors.
 
 ---
 
-## 2. Mathematical Corrections & Unit Alignment
+## 2. Mathematical Corrections & Alignment
 
 ### 2.1 Resolution of the Time-Scale Discrepancy
 A critical dimensional conflict was identified in the legacy noise-attenuation loop where a dimensionless simulation time parameter ($t_{\text{sim}} = 2.0$) was coupled directly against an unscaled physical coherence lifetime ($T_2 = 17.5 \times 10^{-6}\text{ s}$). This caused the dephasing exponential multiplier to artificially collapse to zero:
@@ -38,18 +38,6 @@ Following unit alignment and execution across extended lattice limits ($N \in \{
 *   **Flat Control Baseline (`SYM`):** Freezes permanently out at an $\text{IPR} = 0.1407$ across all system sizes, demonstrating a complete collapse of spatial transport due to lack of phase-modulated routing.
 *   **Pentatonic Modulation (`AAH`):** Exhibits continuous anti-localization behavior, dropping smoothly from $0.1907 \to 0.1747$ before hitting a localized anomaly at $N=31$ ($\text{IPR} = 0.2656$), followed by immediate recovery down to $0.1654$ at $N=51$.
 
-Inverse Participation Ratio (IPR) Scaling Landscape
-0.30 |
-|          [N=31 Spike: 0.2656]
-0.25 |           / 
-|          /   
-0.20 |  0.1907 /     
-|    --- 0.1801
-0.15 |   [AAH]         * 0.1747------------------* 0.1654
-|  ...................................................... [SYM Baseline: 0.1407]
-0.10 |________________________________________________________
-11      15       21        31                51
-Lattice Dimension (N Qubits)
 
 ### 3.1 Physical Origin of the Anomaly
 The distinct IPR spike at $N=31$ represents an authentic physical **commensurability artifact**. Because the pentatonic spiral ratio must be implemented on finite hardware via a rational cyclical approximation ($\beta = 117/200 = 0.5850$), the discrete spatial coordinate system can fall into harmonic resonance with the modulation wavelength. 
@@ -58,19 +46,19 @@ At a system size of $N=31$, the mid-chain injection point sits at site index $i=
 
 $$\cos(2\pi \cdot \beta \cdot i) = \cos(2\pi \cdot 0.5850 \cdot 15) = \cos(2\pi \cdot 8.775) \implies \cos(2\pi \cdot 0.775)$$
 
-Because $0.775 \equiv 31/40$, the finite boundary conditions of the $31$-site system align exactly with the numerator of the phase-wrapped rational wave fraction. This structural resonance forces constructive back-reflection across the boundaries, causing the quasiperiodic lattice to temporarily mimic a perfectly periodic crystal. This localized trapping behavior validates the core physics of the model and provides exceptional material for peer-review defense.
+Because $0.775 \equiv 31/40$, the finite boundary conditions of the $31$-site system align exactly with the numerator of the phase-wrapped rational wave fraction. This structural resonance forces constructive back-reflection across the boundaries, causing the quasiperiodic lattice to temporarily mimic a perfectly periodic crystal. This localized trapping behavior validates the core physics of the model.
 
 ---
 
 ## 4. Architectural Separation of Figures
-To preserve the scientific integrity of the project, the visualization pipeline inside `src/plot_fidelity.py` has been completely decoupled into separate, independent graphic targets:
+The visualization pipeline inside `src/plot_fidelity.py` has been decoupled into separate, independent graphic targets:
 1.  `notes/hardware_7qubit_comparison.png`: A 14-bar spatial population distribution mapping the true empirical `ibm_kingston` data tail and its verified $+3.48\%$ retention gap.
-2.  `notes/numerical_scaling_trends.png`: A multi-point trendline mapping the physical IPR scaling trajectory to the thermodynamic limit.
+2.  `notes/numerical_scaling_trends.png`: A multi-point trendline mapping the physical IPR scaling trajectory out to 51 qubits.
 
 ---
 
 ## 5. Next Milestones: Manuscript Preparation (Paper 2)
-With the codebase, datasets, and physical interpretations locked down, the project formally transits to manuscript composition within the LaTeX Overleaf workspace. Initial structural targets include:
-*   Formalizing Section II: Hardware Topology Selection and DFS Substring Isolation.
-*   Documenting Section III: The Rational Phase Approximation of Continuous Irrational Spirals.
+With the codebase, datasets, and physical interpretations in place, now moving to writing up within the LaTeX Overleaf workspace. Initial structural targets include:
+*   Formalizing Hardware Topology Selection and DFS Substring Isolation.
+*   Documenting the Rational Phase Approximation of Continuous Irrational Spirals.
 
