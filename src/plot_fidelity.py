@@ -1,68 +1,92 @@
-"""
-src/plot_fidelity.py
-Author: Russell Ballantine
-Description: Generates publication-ready comparative multi-panel line plots
-             contrasting AAH and Symmetric wave scaling behaviors.
-"""
-
 import os
-import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
-def generate_publication_plot():
-    csv_path = "notes/scaling_trendlines.csv"
-    output_image = "notes/fidelity_decay_comparison.png"
-    
-    if not os.path.exists(csv_path):
-        print(f"Error: Could not locate data at '{csv_path}'. Please run 'src/noisy_simulation.py' first.")
+# Ensure notes directory exists
+os.makedirs('notes', exist_ok=True)
+
+# Set publication style defaults
+plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
+plt.rcParams.update({
+    'font.size': 11,
+    'axes.labelsize': 12,
+    'axes.titlesize': 12,
+    'xtick.labelsize': 11,
+    'ytick.labelsize': 11,
+})
+
+def plot_spatial_hardware_distribution():
+    """Dynamically loads real QPU telemetries and generates the spatial distribution plot."""
+    print("Generating Figure 1: 7-node spatial hardware comparison plot...")
+    try:
+        phase_beta_striped = np.loadtxt("notes/phase3_beta_pop.txt")
+        periodic_control = np.loadtxt("notes/phase3_periodic_pop.txt")
+    except Exception as e:
+        print(f"Error loading hardware files: {e}")
         return
 
-    # Load numerical data
-    df = pd.read_csv(csv_path)
+    nodes = np.arange(7) 
+    fig, ax = plt.subplots(figsize=(8, 5))
+    width = 0.35
     
-    # Configure academic plot styling parameters
-    plt.rcParams.update({
-        "font.family": "serif",
-        "font.size": 11,
-        "axes.labelsize": 12,
-        "axes.titlesize": 12,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
-        "legend.fontsize": 10,
-        "grid.alpha": 0.3
-    })
+    ax.bar(nodes - width/2, periodic_control, width, label='Periodic Control Baseline', color='#7f8c8d', edgecolor='black')
+    ax.bar(nodes + width/2, phase_beta_striped, width, label='Phase Beta Striped', color='#2c3e50', edgecolor='black')
+    ax.axvspan(2.5, 3.5, color='#e74c3c', alpha=0.15, label='Defect Node Workspace (Qubit 48)')
     
-    # Initialize 1x2 side-by-side subplots
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.5), sharex=True)
-    
-    # --- PANEL A: CENTER NODE POPULATION TRANSITION ---
-    ax1.plot(df["System_Size"], df["AAH_Center"], color="#1f77b4", marker="o", linewidth=2, label="AAH (Quasi-Periodic)")
-    ax1.plot(df["System_Size"], df["SYM_Center"], color="#d62728", marker="s", linestyle="--", linewidth=2, label="SYM (Periodic Control)")
-    
-    ax1.set_title("Panel A: Center Node Stagnation ($P_{\\text{center}}$)")
-    ax1.set_ylabel("Probability Density Fraction")
-    ax1.set_xlabel("System Size ($n$ Qubits)")
-    ax1.set_ylim(-0.05, 1.05)
-    ax1.set_xticks([11, 15, 21])
-    ax1.grid(True, linestyle=":")
-    ax1.legend(loc="lower left")
-    
-    # --- PANEL B: NEIGHBOR CLUSTER SUM RESERVATION ---
-    ax2.plot(df["System_Size"], df["AAH_Neighbor_Sum"], color="#2ca02c", marker="o", linewidth=2, label="AAH Spectator Ring")
-    ax2.plot(df["System_Size"], df["SYM_Neighbor_Sum"], color="#9467bd", marker="s", linestyle="--", linewidth=2, label="SYM Spectator Ring")
-    
-    ax2.set_title("Panel B: Bystander Cluster Sum ($P_{\\text{neighbors}}$)")
-    ax2.set_xlabel("System Size ($n$ Qubits)")
-    ax2.set_ylim(-0.05, 1.05)
-    ax2.grid(True, linestyle=":")
-    ax2.legend(loc="upper left")
-    
-    plt.tight_layout()
-    
-    # Save directly to notes directory matching workspace specifications
-    plt.savefig(output_image, dpi=300, bbox_inches="tight")
-    plt.close()
-    print(f">> Publication asset successfully rendered and saved to '{output_image}'.")
+    defect_idx = 3
+    gap = phase_beta_striped[defect_idx] - periodic_control[defect_idx]
+    ax.annotate(f'+{gap*100:.2f}% Gap', 
+                xy=(defect_idx + width/2, phase_beta_striped[defect_idx]), 
+                xytext=(defect_idx + 0.8, phase_beta_striped[defect_idx] + 0.03),
+                fontweight='bold', color='#e74c3c',
+                arrowprops=dict(arrowstyle="->", color="#e74c3c", connectionstyle="arc3,rad=-0.2"))
 
-if __name__ == "__main__":
-    generate_publication_plot()
+    ax.set_xlabel('Physical QPU String Index (Center = Node 3 / Qubit 48)', fontweight='bold', labelpad=10)
+    ax.set_ylabel('Site Population Probability', fontweight='bold')
+    ax.set_title('Physical 7-Qubit Spatial Distribution Benchmark (ibm_kingston)', pad=15, fontweight='bold')
+    ax.set_xticks(nodes)
+    ax.set_xticklabels([f'Node {i}' for i in range(7)])
+    ax.set_ylim(0, max(np.max(periodic_control), np.max(phase_beta_striped)) + 0.08)
+    ax.legend(loc='upper right', frameon=True)
+    plt.tight_layout()
+    plt.savefig('notes/hardware_7qubit_comparison.png', dpi=300)
+    plt.close()
+    print("Saved: notes/hardware_7qubit_comparison.png")
+
+def plot_numerical_scaling():
+    """Dynamically loads scaling CSV data and plots true physical IPR scaling trendlines."""
+    print("Generating Figure 2: IPR scaling trendline plot...")
+    try:
+        df = pd.read_csv("notes/scaling_trendlines.csv")
+    except Exception as e:
+        print(f"Error loading scaling CSV: {e}")
+        return
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    
+    # Plot IPR trajectories
+    ax.plot(df['System_Size'], df['AAH_IPR'], marker='s', linewidth=2.5, color='#2c3e50', 
+            label='AAH Pentatonic (Dynamic Delocalization/Routing)')
+    ax.plot(df['System_Size'], df['SYM_IPR'], marker='o', linewidth=2.0, linestyle='--', color='#7f8c8d', 
+            label='SYM Flat Control (Stagnant/Localized Core)')
+    ax.plot(df['System_Size'], df['Ideal_Delocalized_Limit'], linestyle=':', color='#e74c3c', alpha=0.6,
+            label='Theoretical Maximum Delocalization (1/N)')
+    
+    ax.set_xlabel('Lattice Dimension (Total Available Qubits)', fontweight='bold', labelpad=10)
+    ax.set_ylabel('Inverse Participation Ratio (IPR)', fontweight='bold')
+    ax.set_title('Topological Anti-Localization Trends under Defect Dephasing', pad=15, fontweight='bold')
+    ax.set_xticks(df['System_Size'])
+    ax.set_ylim(0.0, 0.6)
+    ax.legend(loc='upper right', frameon=True)
+    plt.tight_layout()
+    plt.savefig('notes/numerical_scaling_trends.png', dpi=300)
+    plt.close()
+    print("Saved: notes/numerical_scaling_trends.png")
+
+
+if __name__ == '__main__':
+    plot_spatial_hardware_distribution()
+    print("-" * 50)
+    plot_numerical_scaling()
+    print("\nAll plotting channels are completely isolated, decoupled, and clean!")
