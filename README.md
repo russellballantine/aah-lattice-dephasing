@@ -60,7 +60,7 @@ Ensure you have Python 3.10+ and a virtual environment activated:
 
 ```bash
 # Clone the repository
-git clone https://github.com
+git clone https://github.com/russellballantine/aah-lattice-dephasing
 cd aah-lattice-dephasing
 
 # Install localized dependencies
