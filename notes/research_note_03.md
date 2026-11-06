@@ -4,7 +4,7 @@
 
 The spatial structure of the on-site potential landscape in Phase Beta is fundamentally dictated by the group-theoretic properties of the **Spiral of Fifths**. 
 
-In equal-tempered music theory, a perfect fifth corresponds to a frequency ratio of $3:2$. Logarithmically mapping this pitch interval into a modulo-1 continuous circle (octave equivalence) defines the generator for the spiral:
+In un-tempered music theory(pythagorean), a perfect fifth corresponds to a frequency ratio of $3:2$. Logarithmically mapping this pitch interval into a modulo-1 continuous circle (octave equivalence) defines the generator for the spiral:
 
 $$\alpha_0 = \log_2\left(\frac{3}{2}\right) \approx 0.58496250072...$$
 
